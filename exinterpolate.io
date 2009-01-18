@@ -7,13 +7,10 @@
 
     Additionaly, it provides two convenience functions:
 
-        :a          The message `a` is evaluated and its
-                    result is appended to the global result.
-                    Returns nil.
-
-        !("huhu")   The message "huhu" is evaluated and
+        !"huhu"     The message "huhu" is evaluated and
                     its result is appended to the global result.
                     Returns nil.
+                    That's an operator.
     
     Example:
 
@@ -33,33 +30,23 @@ START := "!{"
 END := "}"
 RE := "#{START}([^#{END}]+)#{END}" interpolate asRegex
 
-exinterpolate := method(seq,
+exinterpolate := method(seq, context,
     result := "" asMutable
     
     # set the convenience stuff
-    context := call sender clone 
-    context setSlot(":", 
-        block(
-            r := Object clone do(
-                forward := method(
-                    res := call delegateTo(call sender)
-                    if(res,
-                        result appendSeq(res asString)
-                    )
-                    return(nil)
-                ) 
-            ) 
-            r setSlot("result", result)
-            return(r)
-        ) call
+    if(context == nil,
+        context = call sender
     )
 
+    context = context clone
     context setSlot("!",
         block(arg,
             result appendSeq(arg)
             nil
         ) setIsActivatable(true)
     )
+
+    OperatorTable addOperator("!", 0)
 
     matches := seq matchesOfRegex(RE)
 
