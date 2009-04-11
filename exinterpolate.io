@@ -46,8 +46,6 @@ exinterpolate := method(seq, context,
         ) setIsActivatable(true)
     )
 
-    OperatorTable addOperator("!", 0)
-
     matches := seq matchesOfRegex(RE)
 
     last_end := 0
@@ -67,3 +65,4 @@ exinterpolate := method(seq, context,
     return(result)
 )
 
+OperatorTable addOperator("!", 0)
